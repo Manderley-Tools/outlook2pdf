@@ -1,38 +1,38 @@
-![Banner](images/banner.jpg)
+# Outlook - Enregistrer les courriels sélectionnés au format PDF
 
-# Outlook - Save selected emails as PDF
+![Banner](./banner.svg)
 
-> Outlook macro to save emails in as pdf files on your disk
+> Macro Outlook pour enregistrer les courriels en tant que fichiers PDF à l'emplacement sélectionné
 
 ## Description
 
-Select one or more emails from within your Outlook client, click on a custom button of your ribbon and save them in a specific folder of your hard disk.
+Sélectionner un ou plusieurs courriels à partir du client Outlook, cliquer sur un bouton personnalisé du ruban et enregistrer-les dans un dossier spécifique.
 
-You can f.i. select 250 emails and in just a few clicks you can save them as pdf.
+Vous pouvez par exemple sélectionner 250 courriels et les enregistrer au format PDF en quelques clics.
 
-## Table of Contents
+## Table des Matières
 
-- [Install](#install)
+- [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
 
-## Install
+## Installation
 
-Get a copy of the `module.bas` VBA code and copy it into your Outlook client.
+Obtenez une copie du code VBA `module.bas` et copiez-le dans votre client Outlook.
 
-- Press `ALT-F11` in Outlook to open the `Visual Basic Editor` (aka VBE) window.
-- Create a new module and copy/paste the content of the `module.bas` file that you can found in this repository
-- Close the VBE
-- Right-click on your Outlook ribbon to customize it so you can add a new button. Assign the `SaveAsPDFfile` subroutine to that button.
+- Appuyez sur `ALT-F11` dans Outlook pour ouvrir la fenêtre `Visual Basic Editor` (alias VBE).
+- Créez un nouveau module et copiez/collez le contenu du fichier `module.bas` que vous pouvez trouver dans ce dépôt.
+- Fermer le VBE
+- Cliquez avec le bouton droit de la souris sur le ruban Outlook pour le personnaliser et y ajouter un nouveau bouton. Attribuer la macro `SaveAsPDFfile` à ce bouton.
 
-Note : you need to have Winword installed on your computer.
+Note : Winword doit être installé sur votre ordinateur.
 
 ## Usage
 
-1. Select one or more emails
-2. Click on your `SaveAsPDFfile` button
-3. A few popups will be displayed asking you for instance where to store the emails (as pdf files) and if you want to delete emails once saved as pdf or not.
-4. That's it, wait a few and you'll get your mails saved on your disk.
+1. Sélectionner un ou plusieurs courriels
+2. Cliquez sur votre bouton `SaveAsPDFfile`.
+3. Quelques fenêtres contextuelles s'affichent, vous demandant par exemple où stocker les courriers électroniques (sous forme de fichiers PDF) et si vous souhaitez ou non supprimer les courriers électroniques une fois qu'ils ont été sauvegardés sous forme de fichiers PDF.
+4. C'est tout, attendez un peu et vous obtiendrez vos mails sauvegardés sur votre disque.
 
 ![](images/demo.gif)
 
