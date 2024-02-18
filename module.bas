@@ -9,10 +9,10 @@
 ' @voir https://github.com/Manderley-tools/outlook2pdf
 ' --------------------------------------------------
 Option Explicit
-Private Const cFolder As String = "C:\Mails\"
+Private Const cFolder As String = "C:\"
 Private objWord As Object
 ' --------------------------------------------------
-' Ask the user for the folder where to store emails
+' Demander à l'utilisateur le dossier dans lequel stocker les courriels
 ' --------------------------------------------------
 Private Function AskForTargetFolder(ByVal sTargetFolder As String) As String
     Dim dlgSaveAs As FileDialog
