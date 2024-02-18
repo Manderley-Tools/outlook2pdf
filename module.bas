@@ -4,8 +4,10 @@
 ' sur votre disque dur. Vous pouvez sélectionner 
 ' autant de mails ' que vous voulez et chaque mail 
 ' sera sauvegardé sur votre disque.
+'
 ' Nécessite : 
 ' - Winword (référencé par late-bindings)
+'
 ' @voir https://github.com/Manderley-tools/outlook2pdf
 ' --------------------------------------------------
 Option Explicit

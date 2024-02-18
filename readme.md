@@ -1,6 +1,6 @@
 # Outlook - Enregistrer les courriels sélectionnés au format PDF
 
-![Banner](./banner.svg)
+![Banner](images/banner.svg)
 
 > Macro Outlook pour enregistrer les courriels en tant que fichiers PDF à l'emplacement sélectionné
 
