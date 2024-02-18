@@ -70,10 +70,8 @@ Private Function AskForFileName(ByVal sFileName As String) As String
     AskForFileName = sFileName                                          ' Renvoyer le nom du fichier
 End Function
 ' --------------------------------------------------
-' Do the job, process every selected emails and
-' export them as .pdf files.
-' If the user has ask for removing mails once exported,
-' emails will be removed.
+' Faire le travail, traiter les courriels sélectionnés et les exporter au format PDF
+' Déplace les courriels dans éléments supprimés si deamndé.
 ' --------------------------------------------------
 Sub SaveAsPDFfile()
 
@@ -107,14 +105,14 @@ Sub SaveAsPDFfile()
     wSelectedeMails = oSelection.Count                                  ' Obtenir le nombre de courriels sélectionnés
 
     If wSelectedeMails < 1 Then                                         ' Assurez-vous qu'au moins un élément est sélectionné
-        Call MsgBox("Please select at least one email", _
-            vbExclamation, "Save as PDF")
+        Call MsgBox("Veuillez sélectionner au moins un email", _
+            vbExclamation, "Enregistrer en PDF")
         Exit Sub
     End If
 
-    bContinue = MsgBox("You're about to export " & wSelectedeMails & " " & _
-        "emails as PDF files, do you want to continue? If you Yes, you'll " & _
-        "first need to specify the name of the folder where to store the files", _
+    bContinue = MsgBox("Vous êtes sur le point d'exporter " & wSelectedeMails & " " & _
+        "emails en tant que fichiers PDF, voulez-vous continuer ? If you Yes, you'll " & _
+        "devrez d'abord spécifier le nom du dossier dans lequel les fichiers seront stockés", _
         vbQuestion + vbYesNo + vbDefaultButton1) = vbYes
 
     If Not bContinue Then
@@ -131,7 +129,7 @@ Sub SaveAsPDFfile()
         Set objWord = Nothing
         Exit Sub
     End If
-    ' Once the mail has been saved as PDF do we need to remove it?
+    ' Une fois enregistré en PDF, supprimer le courriel ?
     bRemoveMailAfterExport = MsgBox("Une fois que l'e-mail a été " & _
         "exporté et enregistré sur votre disque, souhaitez-vous " & _
         "le conserver dans votre boîte aux lettres ou le supprimer ?" & _ 
