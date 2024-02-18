@@ -429,7 +429,7 @@ Sub SaveAsPDF()
     ' l'élément doit être stocké
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     sTempFolder = objFSO.GetSpecialFolder(2)
-    
+    Set objFSO = Nothing
 
     ' ----------------------------------------------------
     ' Démarrage du traitement des courriels
