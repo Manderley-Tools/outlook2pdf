@@ -18,7 +18,8 @@
 Option Explicit
 Private Const cFolder As String = """C:\"""
 Private objWord As Object
-Declare Function AtEndOfStream Lib "msvbvm60.dll" (ByVal hFile As Long) As Long
+'Declare Function AtEndOfStream Lib "msvbvm60.dll" (ByVal hFile As Long) As Long
+
 ' --------------------------------------------------
 ' Demander à l'utilisateur le dossier dans lequel stocker les courriels
 ' --------------------------------------------------
