@@ -552,11 +552,13 @@ Sub SaveAsPDFfiles()
     
     TS_ConvertirPlageEnTS objWorksheet.Range("A1"), "PIECES", "*", xlYes ' Formatter le tableau Excel
     Dim str As String
+    ' A reprendre pour tenir compte de la variable y
     objWorksheet.Range("C2:C16").NumberFormatLocal = "# ##0"
     objWorksheet.Range("D2:D16").NumberFormatLocal = "jj/mm/aaaa"
     objWorksheet.Range("E2:E16").NumberFormatLocal = "hh:mm:ss"
     objWorksheet.Range("K2:K16").NumberFormatLocal = "# ##0,00 €;[Rouge]- # ##0 €"
     objWorksheet.Range("P2:P16").NumberFormatLocal = "# ##0"
+    ' -----------------------------------------
     objWorksheet.Cells(y, 3).Formula2 = "=SOUS.TOTAL(104,['#])"
     objWorksheet.Cells(y, 11).Formula2 = "=SOUS.TOTAL(109,[Montant])"
     objWorksheet.Cells(y, 16).Formula2 = "=SOUS.TOTAL(109,[Pages])"
