@@ -18,7 +18,6 @@
 Option Explicit
 Private Const cFolder As String = """C:\"""
 Private objWord As Object
-'Declare Function AtEndOfStream Lib "msvbvm60.dll" (ByVal hFile As Long) As Long
 
 ' --------------------------------------------------
 ' Demander à l'utilisateur le dossier dans lequel stocker les courriels
@@ -285,10 +284,10 @@ Sub SaveAsPDFfiles()
             vbExclamation, "Enregistrer en PDF")
         Exit Sub
     End If
-    bContinue = MsgBox("Vous êtes sur le point d'exporter " & oSelCount & " " & _
-        "emails en tant que fichiers PDF, voulez-vous continuer ? If you Yes, you'll " & _
-        "devrez d'abord spécifier le nom du dossier dans lequel les fichiers seront stockés", _
-        vbQuestion + vbYesNo + vbDefaultButton1) = vbYes
+    bContinue = MsgBox("Vous êtes sur le point de convertir " & oSelCount & " " & _
+        "courriels en autant de fichiers PDF, voulez-vous continuer ? " & vbCrLf & vbCrLf & _
+        "Cliquez sur OK, pour sélectionner un dossier de destination." & vbCrLf & _
+        "Cliquer sur Annuler pour abandonner le processus.", vbOKCancel + vbInformation + vbDefaultButton1) = vbOK
     If Not bContinue Then Exit Sub
     Set objWord = CreateObject("Word.Application")                      ' Démarrer Word et initialiser l'objet
         objWord.Visible = False                                         ' Ne pas afficher la fenetre Word
@@ -298,39 +297,38 @@ Sub SaveAsPDFfiles()
         Set objWord = Nothing
         Exit Sub
     End If
-    ' Une fois enregistré en PDF, supprimer le courriel ?
-    bRemoveMailAfterExport = False
-    bRemoveMailAfterExport = MsgBox("Une fois que l'e-mail a été " & _
-        "exporté et enregistré sur votre disque, souhaitez-vous " & _
-        "le conserver dans votre boîte aux lettres ou le supprimer ?" & _
-        vbCrLf & vbCrLf & _
-        "Cliquez sur Oui pour le conserver. " & vbCrLf & _
-        "Cliquez sur Non pour le supprimer.", _
-        vbQuestion + vbYesNo + vbDefaultButton1) = vbNo
-    bAskForFileName = True
-    If (oSelCount > 1) Then                                             ' Si plusieurs courriels, choisir s'il faut voir les noms de fichiers.
-        bAskForFileName = MsgBox("Vous êtes sur le point de sauvegarder " & _
-            oSelCount & " " & "les courriers électroniques sous " & _
-            "forme de fichiers PDF. Voulez-vous voir " & oSelCount & _
-            " des invites pour que vous puissiez mettre à jour le nom " & _
-            "du fichier ou utiliser le fichier automatique automatisé " & _
-            "(donc pas d'invite)." & vbCrLf & vbCrLf & _
-            "Cliquez sur Oui pour voir les invites." & vbCrLf & _
-            "Cliquez sur Non pour laisserr faire l'automate.", _
-            vbQuestion + vbYesNo + vbDefaultButton2) = vbYes
-        MsgBox "ATTENTION : Vous ne verrez pas de progression à l'écran " & _
-            "(malheureusement, Outlook ne le permet pas)." & _
-            vbCrLf & vbCrLf & _
-            "Si vous exportez beaucoup d'e-mails, le processus peut " & _
-            "prendre un certain temps. La meilleure façon de voir que " & _
-            "les choses fonctionnent consiste à ouvrir une fenêtre " & _
-            "d'explorateur et de voir comment les fichiers sont ajoutés " & _
-            "au dossier sélectionné." & _
-            vbCrLf & vbCrLf & _
-            "Une fois l'opération terminée, vous verrez un message de " & _
-            "retour d'information.", _
-            vbInformation + vbOKOnly
-    End If
+    bRemoveMailAfterExport = False                                      ' Une fois enregistré en PDF, supprimer le courriel ?
+'    bRemoveMailAfterExport = MsgBox("Une fois que l'e-mail a été " & _
+'        "exporté et enregistré sur votre disque, souhaitez-vous " & _
+'        "le conserver dans votre boîte aux lettres ou le supprimer ?" & _
+'        vbCrLf & vbCrLf & _
+'        "Cliquez sur Oui pour le conserver. " & vbCrLf & _
+'        "Cliquez sur Non pour le supprimer.", _
+'        vbQuestion + vbYesNo + vbDefaultButton1) = vbNo
+    bAskForFileName = False                                             ' Si plusieurs courriels, choisir s'il faut voir les noms de fichiers.
+'    If (oSelCount > 1) Then
+'        bAskForFileName = MsgBox("Vous êtes sur le point de sauvegarder " & _
+'            oSelCount & " " & "les courriers électroniques sous " & _
+'            "forme de fichiers PDF. Voulez-vous voir " & oSelCount & _
+'            " des invites pour que vous puissiez mettre à jour le nom " & _
+'            "du fichier ou utiliser le fichier automatique automatisé " & _
+'            "(donc pas d'invite)." & vbCrLf & vbCrLf & _
+'            "Cliquez sur Oui pour voir les invites." & vbCrLf & _
+'            "Cliquez sur Non pour laisser faire l'automate.", _
+'            vbQuestion + vbYesNo + vbDefaultButton2) = vbNo
+'        MsgBox "ATTENTION : Vous ne verrez pas de progression à l'écran " & _
+'            "(malheureusement, Outlook ne le permet pas)." & _
+'            vbCrLf & vbCrLf & _
+'            "Si vous exportez beaucoup d'e-mails, le processus peut " & _
+'            "prendre un certain temps. La meilleure façon de voir que " & _
+'            "les choses fonctionnent consiste à ouvrir une fenêtre " & _
+'            "d'explorateur et de voir comment les fichiers sont ajoutés " & _
+'            "au dossier sélectionné." & _
+'            vbCrLf & vbCrLf & _
+'            "Une fois l'opération terminée, vous verrez un message de " & _
+'            "retour d'information.", _
+'            vbInformation + vbOKOnly
+'    End If
     If bAskForFileName Then
         Set dlgSaveAs = objWord.FileDialog(msoFileDialogSaveAs)         ' Ouvrir la boîte de dialogue Enregistrer sous
         Set objFDFS = dlgSaveAs.Filters                                 ' Déterminer l'indice de filtre pour l'enregistrement d'un fichier PDF
@@ -344,11 +342,15 @@ Sub SaveAsPDFfiles()
         Set objFDFS = Nothing
         dlgSaveAs.FilterIndex = i                                       ' Définir l'indice de filtre à pdf-files
     End If
+    
+    ufProgress.LabelProgress.Width = 0
+    ufProgress.Show
+    
     Set objFSO = CreateObject("Scripting.FileSystemObject")             ' Obtenir le dossier temporaire de l'utilisateur où l'élément doit être stocké
     sTmpFolder = objFSO.GetSpecialFolder(2)
     Set objFSO = Nothing
     On Error Resume Next                                                ' Commencer le traitement unitaire des courriels sélectionnés.
-    sTgtFilePath = sTgtFolder & "ANALYSE.xlsx"
+    sTgtFilePath = sTgtFolder & "ANALYSE DE PIECES.xlsx"
     Debug.Print "Le fichier " & sTgtFilePath & " existe : " & isFile
     If Dir(sTgtFilePath) <> "" Then                                     ' Vérifier si le fichier Excel existe déjà
         Debug.Print Dir(sTgtFilePath)
@@ -379,6 +381,7 @@ Sub SaveAsPDFfiles()
         objWorksheet.Cells(1, 9).Value = "Objet"
         objWorksheet.Cells(1, 10).Value = "Référence"
         objWorksheet.Cells(1, 11).Value = "Montant"
+        'objWorksheet.Cells(1, 12).Value = "Pièces jointes"
         objWorksheet.Cells(1, 12).Value = "Synthèse"
         objWorksheet.Cells(1, 13).Value = "Observations"
         objWorksheet.Cells(1, 14).Value = "Questions"
@@ -386,7 +389,22 @@ Sub SaveAsPDFfiles()
         objWorksheet.Cells(1, 16).Value = "Pages"
         y = 2
     End If
-    For i = oSelCount To 1 Step -1
+    
+    
+    'For i = oSelCount To 1 Step -1
+    For i = 1 To oSelCount
+    
+        Dim pctdone As Long
+        Dim ratio As Long
+        
+        pctdone = pctdone + ufProgress.FrameProgress.Width / oSelCount
+        
+        With ufProgress
+            ufProgress.LabelCaption.Caption = "Traitement du courrier électronique n°" & i & " sur " & oSelCount
+            ufProgress.LabelProgress.Width = pctdone ' * (ufProgress.FrameProgress.Width)
+        End With
+        DoEvents
+    
         Set oMail = oSel.Item(i)                                        ' Récupérer le courriel sélectionné
         strSender = UCase(GetDomain(oMail.Sender.Address))              ' Récupérer l'adresse de l'expéditeur
         If strSender = "" Then                                          ' SI l'adresse n'est pas trouvée
@@ -482,63 +500,66 @@ Sub SaveAsPDFfiles()
         P = 0                                                           ' Ajout des pièces jointes
         For N = 1 To oMail.Attachments.Count
             Set objAtt = oMail.Attachments.Item(N)
-            If Not Left(objAtt.FileName, 6) = "image0" Then
-                P = P + 1                                               'Encodage du n° de la pièce jointe
-                x = P
-                If P < 10 Then x = "0" & P
-                Set objFSO = CreateObject("Scripting.FileSystemObject") ' Récupération de l'extension de la pièce jointe
-                sExt = objFSO.GetExtensionName(oMail.Attachments.Item(N).FileName)
-                Select Case sExt                                        ' Traitement conditionnel en fonction de l'extension
-                Case "doc", "docx", "xls", "xlsx", "ppt", "pptx"        ' Pour les pièces jointes directement convertibles en PDF
-                    Debug.Print "L'extension de la pièce jointe est : " & UCase(sExt)
-                    ' TODO : Coder la conversion au format PDF
-                    ' TODO : Récupérer la date du dernier enregistrement (cf. BuiltinDocumentProperties("Last Save Time") ?)
-                    ' TODO : Récuperer l'auteur  (cf. BuiltinDocumentProperties("Author") ?)
-                Case "msg", "eml"                                       ' Pour les pièces jointes susceptibles d'en contenir d'autres
-                    Debug.Print "ATTENTION => La pièce jointe est un mail au format : " & UCase(sExt)
-                    ' TODO : Coder la conversion au format PDF
-                    ' TODO : Vérifier s'ils comportent des pièces jointes ou non et les traiter de la même manière le cas échéant
-                    ' TODO : Factoriser le tout pour alléger le code
-                Case "pdf"                                              ' Pour les pièces jointes déjà au format PDF
-                    Debug.Print "La pièce jointe est déjà au format " & UCase(sExt)
-                    objAtt.SaveAsFile (sTgtFolder & oMail.Attachments.Item(N).FileName)
-                    nbPages = GetNumberOfPages(sTgtFolder & oMail.Attachments.Item(N).FileName)
-                    Debug.Print "Date de modification de la pièce : " & GetPDFDate(sTgtFolder & oMail.Attachments.Item(N).FileName)
-                    Kill (sTgtFolder & oMail.Attachments.Item(N).FileName)
-                Case Else                                               ' Pour tous les autres types de pièces jointes
-                    Debug.Print "ATTENTION => L'extension de la pièce jointe est : " & UCase(sExt)
-                    ' TODO : Cf. Traitement ci-dessous
-            End Select
-            myObject = UCase(Trim(oRegEx.Replace(CleanSubject(objAtt.FileName), "")))
-            myDate = Format(oMail.ReceivedTime, "yyyymmdd_HhNnSs")
-            myType = "_P" & x & "_"
-            myFile = myDate & myType & strSender & "_" & strReceiver & "_" & myObject
-            myObject = UCase(Replace(objAtt.FileName, "." & sExt, ""))
-            objAtt.SaveAsFile (sTgtFolder & myFile)
-            myDate = FileDateTime(sTgtFolder & myFile)
-            Debug.Print "Date de dernière modification de la pièce jointe : " & myDate
-            objWorksheet.Cells(y, 1).Value = myFile                     ' Renseigner le tableau de bord Excel avec la pièce jointe
-            objWorksheet.Cells(y, 2).Value = myObject
-            objWorksheet.Cells(y, 3).Value = y - 1
-            objWorksheet.Cells(y, 4).Value = Format(myDate, "dd/mm/yyyy")
-            objWorksheet.Cells(y, 5).Value = Format(myDate, "Hh:Nn:Ss")
-            objWorksheet.Cells(y, 6).Value = "Pièce jointe"
-            objWorksheet.Cells(y, 7).Value = strSender
-            objWorksheet.Cells(y, 8).Value = strReceiver
-            objWorksheet.Hyperlinks.Add _
-                Anchor:=objWorksheet.Cells(y, 9), _
-                Address:="" & myFile & "", _
-                TextToDisplay:="" & myObject & ""
-            objWorksheet.Cells(y, 10).Value = UCase(sExt)
-            objWorksheet.Cells(y, 11).Value = Format(0, "# ##0,00 €")
-            objWorksheet.Cells(y, 12).Value = "Dernière modification le " & Format(myDate, "dd/mm/yyyy à Hh:Nn:Ss")
-            objWorksheet.Cells(y, 13).Value = "Pièce jointe n°" & x
-            objWorksheet.Cells(y, 14).Value = ""
-            objWorksheet.Cells(y, 15).Value = ""
-            objWorksheet.Cells(y, 16).Value = nbPages
-            objWorkbook.Save                                            ' Enregistrement du classeur Excel
-            y = y + 1                                                   ' Incrémentation de la position de la ligne dans le fichier Excel
-            nbPages = 0                                                 ' Réinitialisation du nombre de page
+            'MsgBox "Taille de la pièce jointe : " & objAtt.Size
+            If ((objAtt.Size > 20000) And (sExt <> "PNG")) Then
+              If Not Left(objAtt.FileName, 6) = "image0" Then
+                  P = P + 1                                               'Encodage du n° de la pièce jointe
+                  x = P
+                  If P < 10 Then x = "0" & P
+                  Set objFSO = CreateObject("Scripting.FileSystemObject") ' Récupération de l'extension de la pièce jointe
+                  sExt = objFSO.GetExtensionName(oMail.Attachments.Item(N).FileName)
+                  Select Case sExt                                        ' Traitement conditionnel en fonction de l'extension
+                  Case "doc", "docx", "xls", "xlsx", "ppt", "pptx"        ' Pour les pièces jointes directement convertibles en PDF
+                      Debug.Print "L'extension de la pièce jointe est : " & UCase(sExt)
+                      ' TODO : Coder la conversion au format PDF
+                      ' TODO : Récupérer la date du dernier enregistrement (cf. BuiltinDocumentProperties("Last Save Time") ?)
+                      ' TODO : Récuperer l'auteur  (cf. BuiltinDocumentProperties("Author") ?)
+                  Case "msg", "eml"                                       ' Pour les pièces jointes susceptibles d'en contenir d'autres
+                      Debug.Print "ATTENTION => La pièce jointe est un mail au format : " & UCase(sExt)
+                      ' TODO : Coder la conversion au format PDF
+                      ' TODO : Vérifier s'ils comportent des pièces jointes ou non et les traiter de la même manière le cas échéant
+                      ' TODO : Factoriser le tout pour alléger le code
+                  Case "pdf"                                              ' Pour les pièces jointes déjà au format PDF
+                      Debug.Print "La pièce jointe est déjà au format " & UCase(sExt)
+                      objAtt.SaveAsFile (sTgtFolder & oMail.Attachments.Item(N).FileName)
+                      nbPages = GetNumberOfPages(sTgtFolder & oMail.Attachments.Item(N).FileName)
+                      Debug.Print "Date de modification de la pièce : " & GetPDFDate(sTgtFolder & oMail.Attachments.Item(N).FileName)
+                      Kill (sTgtFolder & oMail.Attachments.Item(N).FileName)
+                  Case Else                                               ' Pour tous les autres types de pièces jointes
+                      Debug.Print "ATTENTION => L'extension de la pièce jointe est : " & UCase(sExt)
+                      ' TODO : Cf. Traitement ci-dessous
+              End Select
+              myObject = UCase(Trim(oRegEx.Replace(CleanSubject(objAtt.FileName), "")))
+              myDate = Format(oMail.ReceivedTime, "yyyymmdd_HhNnSs")
+              myType = "_P" & x & "_"
+              myFile = myDate & myType & strSender & "_" & strReceiver & "_" & myObject
+              myObject = UCase(Replace(objAtt.FileName, "." & sExt, ""))
+              objAtt.SaveAsFile (sTgtFolder & myFile)
+              myDate = FileDateTime(sTgtFolder & myFile)
+              Debug.Print "Date de dernière modification de la pièce jointe : " & myDate
+              objWorksheet.Cells(y, 1).Value = myFile                     ' Renseigner le tableau de bord Excel avec la pièce jointe
+              objWorksheet.Cells(y, 2).Value = myObject
+              objWorksheet.Cells(y, 3).Value = y - 1
+              objWorksheet.Cells(y, 4).Value = Format(myDate, "dd/mm/yyyy")
+              objWorksheet.Cells(y, 5).Value = Format(myDate, "Hh:Nn:Ss")
+              objWorksheet.Cells(y, 6).Value = "Pièce jointe"
+              objWorksheet.Cells(y, 7).Value = strSender
+              objWorksheet.Cells(y, 8).Value = strReceiver
+              objWorksheet.Hyperlinks.Add _
+                  Anchor:=objWorksheet.Cells(y, 9), _
+                  Address:="" & myFile & "", _
+                  TextToDisplay:="" & myObject & ""
+              objWorksheet.Cells(y, 10).Value = UCase(sExt)
+              objWorksheet.Cells(y, 11).Value = Format(0, "# ##0,00 €")
+              objWorksheet.Cells(y, 12).Value = "Dernière modification le " & Format(myDate, "dd/mm/yyyy à Hh:Nn:Ss")
+              objWorksheet.Cells(y, 13).Value = "Pièce jointe n°" & x
+              objWorksheet.Cells(y, 14).Value = ""
+              objWorksheet.Cells(y, 15).Value = ""
+              objWorksheet.Cells(y, 16).Value = nbPages
+              objWorkbook.Save                                            ' Enregistrement du classeur Excel
+              y = y + 1                                                   ' Incrémentation de la position de la ligne dans le fichier Excel
+              nbPages = 0                                                 ' Réinitialisation du nombre de page
+            End If
           End If
         Next N
         strSender = ""
@@ -553,12 +574,15 @@ Sub SaveAsPDFfiles()
     
     TS_ConvertirPlageEnTS objWorksheet.Range("A1"), "PIECES", "*", xlYes ' Formatter le tableau Excel
     Dim str As String
+    str = """C2:C" & y & """"
+    Debug.Print str
     ' A reprendre pour tenir compte de la variable y
-    objWorksheet.Range("C2:C16").NumberFormatLocal = "# ##0"
-    objWorksheet.Range("D2:D16").NumberFormatLocal = "jj/mm/aaaa"
-    objWorksheet.Range("E2:E16").NumberFormatLocal = "hh:mm:ss"
-    objWorksheet.Range("K2:K16").NumberFormatLocal = "# ##0,00 €;[Rouge]- # ##0 €"
-    objWorksheet.Range("P2:P16").NumberFormatLocal = "# ##0"
+    objWorksheet.Columns("C").NumberFormatLocal = "# ##0"
+    objWorksheet.Columns("D").NumberFormatLocal = "jj/mm/aaaa"
+    objWorksheet.Columns("E").NumberFormatLocal = "hh:mm:ss"
+    objWorksheet.Columns("K").NumberFormatLocal = "# ##0,00 €;[Rouge]- # ##0 €"
+    objWorksheet.Columns("P").NumberFormatLocal = "# ##0"
+    objWorksheet.Rows("1").NumberFormatLocal = "Standard"
     ' -----------------------------------------
     objWorksheet.Cells(y, 3).Formula2 = "=SOUS.TOTAL(104,['#])"
     objWorksheet.Cells(y, 11).Formula2 = "=SOUS.TOTAL(109,[Montant])"
@@ -570,6 +594,12 @@ Sub SaveAsPDFfiles()
     objWorksheet.Columns("J").HorizontalAlignment = xlLeft
     objWorkbook.Save                                                    ' Enregistrement des modifications apportées au Classeur
     objWorkbook.Close savechanges:=True                                 ' Enregistrement du classeur dans le dossier spécifié
+    
+    'If i = oSelCount Then
+        ufProgress.Hide
+        Unload ufProgress
+    'End If
+    
     Set dlgSaveAs = Nothing
     On Error GoTo 0
     On Error Resume Next
