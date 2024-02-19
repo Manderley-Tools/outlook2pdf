@@ -125,7 +125,7 @@ Private Function GetNumberOfPages(pdfFile As String) As Long
     End If
 End Function
 
-Private Function GetPDFDate(pdfFile As String) As String
+Private Function GetPDFDate(pdfFile As String, Optional dDate As String) As String
     Dim acrApp As New Acrobat.AcroApp
     Dim objPDF As New Acrobat.AcroPDDoc
     Set acrApp = CreateObject("AcroExch.App")
@@ -139,6 +139,19 @@ Private Function GetPDFDate(pdfFile As String) As String
             Debug.Print "Date de modification du PDF : " & objPDF.GetInfo("Created")
         End If
     End If
+End Function
+
+Function GetLastDate(strFilePath As String, Optional dDate As String) As String
+ 
+    Dim oFSO As Scripting.FileSystemObject
+    Dim oFl As Scripting.File
+     
+    Set oFSO = New Scripting.FileSystemObject
+    Set oFl = oFSO.GetFile(strFilePath)
+    
+    GetLastDate = oFl.DateLastModified
+    MsgBox oFl.DateLastModified
+ 
 End Function
 '------------------------------------------------------------------------------------------------
 ' Transformer une plage en Tableau Structuré.
@@ -227,7 +240,7 @@ Sub SaveAsPDFfiles()
     Dim objFDFS As FileDialogFilters
     Dim fdf As FileDialogFilter
     Dim i As Integer                                                    ' Itérateurs
-    Dim x As Integer
+    Dim x As String
     Dim y As Integer
     Dim N As Integer
     Dim P As Integer
@@ -336,9 +349,9 @@ Sub SaveAsPDFfiles()
     On Error Resume Next                                                ' Commencer le traitement unitaire des courriels sélectionnés.
     sTgtFilePath = sTgtFolder & "ANALYSE.xlsx"
     Debug.Print "Le fichier " & sTgtFilePath & " existe : " & isFile
-    If Dir(sTgtFilePath) <> "" Then                                      ' Vérifier si le fichier Excel existe déjà
+    If Dir(sTgtFilePath) <> "" Then                                     ' Vérifier si le fichier Excel existe déjà
         Debug.Print Dir(sTgtFilePath)
-        Set objWorkbook = objExcel.Workbooks.Open(sTgtFilePath)          ' Ouverture du fichier Excel existant
+        Set objWorkbook = objExcel.Workbooks.Open(sTgtFilePath)         ' Ouverture du fichier Excel existant
         If Not objWorkbook.Sheets("ANALYSE DE PIECES") <> "" Then       ' Vérification si la feuille de calcul existe
             Set objWorksheet = objWorkbook.Sheets.Add(After:=objWorkbook.Sheets(objWorkbook.Sheets.Count))   ' Créer une nouvelle feuille de calcul
             objWorksheet.Name = "ANALYSE DE PIECES"                     ' Définir le nom de la feuille de calcul
@@ -478,6 +491,8 @@ Sub SaveAsPDFfiles()
                 Case "doc", "docx", "xls", "xlsx", "ppt", "pptx"        ' Pour les pièces jointes directement convertibles en PDF
                     Debug.Print "L'extension de la pièce jointe est : " & UCase(sExt)
                     ' TODO : Coder la conversion au format PDF
+                    ' TODO : Récupérer la date du dernier enregistrement (cf. BuiltinDocumentProperties("Last Save Time") ?)
+                    ' TODO : Récuperer l'auteur  (cf. BuiltinDocumentProperties("Author") ?)
                 Case "msg", "eml"                                       ' Pour les pièces jointes susceptibles d'en contenir d'autres
                     Debug.Print "ATTENTION => La pièce jointe est un mail au format : " & UCase(sExt)
                     ' TODO : Coder la conversion au format PDF
@@ -514,7 +529,7 @@ Sub SaveAsPDFfiles()
                 Address:="" & myFile & "", _
                 TextToDisplay:="" & myObject & ""
             objWorksheet.Cells(y, 10).Value = UCase(sExt)
-            objWorksheet.Cells(y, 11).Value = 0
+            objWorksheet.Cells(y, 11).Value = Format(0, "# ##0,00 €")
             objWorksheet.Cells(y, 12).Value = "Dernière modification le " & Format(myDate, "dd/mm/yyyy à Hh:Nn:Ss")
             objWorksheet.Cells(y, 13).Value = "Pièce jointe n°" & x
             objWorksheet.Cells(y, 14).Value = ""
@@ -534,16 +549,23 @@ Sub SaveAsPDFfiles()
         '"Destinataire : " & UCase(oMail.Recipients(1).Name) & " (" & oMail.Recipients(1).Address & ")" & vbCrLf & _
         '"Objet : " & UCase(Trim(oRegEx.Replace(CleanSubject(oMail.Subject), "")))
     Next i
+    
     TS_ConvertirPlageEnTS objWorksheet.Range("A1"), "PIECES", "*", xlYes ' Formatter le tableau Excel
-    'objWorksheet.Range("A1:O" & y & "").NumberFormat = "jj/mm/aaaa"
-    'objWorksheet.Range("A1:O" & y & "").NumberFormat = "Comptabilité"
-    'objWorksheet.Range("A1:O" & y & "").NumberFormat = "Nombre"
+    Dim str As String
+    objWorksheet.Range("C2:C16").NumberFormatLocal = "# ##0"
+    objWorksheet.Range("D2:D16").NumberFormatLocal = "jj/mm/aaaa"
+    objWorksheet.Range("E2:E16").NumberFormatLocal = "hh:mm:ss"
+    objWorksheet.Range("K2:K16").NumberFormatLocal = "# ##0,00 €;[Rouge]- # ##0 €"
+    objWorksheet.Range("P2:P16").NumberFormatLocal = "# ##0"
     objWorksheet.Cells(y, 3).Formula2 = "=SOUS.TOTAL(104,['#])"
     objWorksheet.Cells(y, 11).Formula2 = "=SOUS.TOTAL(109,[Montant])"
     objWorksheet.Cells(y, 16).Formula2 = "=SOUS.TOTAL(109,[Pages])"
     objWorksheet.Columns("A:C").Group                                   ' Création et fermeture du groupe de colonnes (à supprimer plus tard)
     objWorksheet.Outline.ShowLevels RowLevels:=1, ColumnLevels:=1
-    objWorkbook.Save                                                    ' Enregistrement du classeur Excel
+    objWorksheet.Columns("D:P").AutoFit
+    objWorksheet.Columns("D:E").HorizontalAlignment = xlCenter
+    objWorksheet.Columns("J").HorizontalAlignment = xlLeft
+    objWorkbook.Save                                                    ' Enregistrement des modifications apportées au Classeur
     objWorkbook.Close savechanges:=True                                 ' Enregistrement du classeur dans le dossier spécifié
     Set dlgSaveAs = Nothing
     On Error GoTo 0
